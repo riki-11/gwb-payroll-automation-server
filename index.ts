@@ -19,16 +19,24 @@ const isProduction = process.env.NODE_ENV === 'production';
 
 // Get the frontend origin from environment variables
 const allowedOrigins = [
-  process.env.FRONTEND_ORIGIN_PROD || "https://gwb-payroll-automation-client.vercel.app",
+  // TODO: Add microsoft azure origin.
+  process.env.FRONTEND_ORIGIN_PROD || "gwb-payroll-automation-client-apa2gufbg4f6gvex.uksouth-01.azurewebsites.net",
   process.env.FRONTEND_ORIGIN_LOCAL || "http://localhost:5173"
 ];
 
 // Enable CORS for all routes based on environment
+// Update CORS configuration
 app.use(cors({
-  origin: allowedOrigins,
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   methods: ["GET", "POST", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
-  credentials: true // Important: required for cookies to work cross-domain
+  credentials: true,
 }));
 
 // Body parser middleware
